@@ -7,7 +7,7 @@ Usage
 -----
 
 
-    import net.jalg.jiron.Jron;
+    import net.jalg.jiron.Jiron;
 
     String encrypted = Jron.seal("{ \"some\" : \"js\"}", "geheim" , Jiron.Options.DEFAULT);
 
