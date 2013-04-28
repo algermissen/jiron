@@ -2,12 +2,8 @@ package net.jalg.jiron;
 
 import static org.junit.Assert.*;
 
-import java.lang.reflect.Field;
 import java.nio.charset.StandardCharsets;
 
-import javax.crypto.SecretKey;
-
-import net.jalg.jiron.Jiron.Algorithm;
 import net.jalg.jiron.Jiron.Options;
 
 import org.junit.Test;

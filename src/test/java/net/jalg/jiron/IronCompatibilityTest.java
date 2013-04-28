@@ -2,19 +2,20 @@ package net.jalg.jiron;
 
 import static org.junit.Assert.*;
 
-import java.lang.reflect.Field;
-import java.nio.charset.StandardCharsets;
-
-import javax.crypto.SecretKey;
-
-import net.jalg.jiron.Jiron.Algorithm;
-import net.jalg.jiron.Jiron.Options;
-
 import org.junit.Test;
 
 
 /**
  * This test is a compatibility test with iron.
+ * 
+ * It takes one of the test tokens from the
+ * <a href="https://github.com/hueniverse/iron/blob/master/test/index.js">iron tests</a> and
+ * unseals them with the Java implementation. This is done to ensure that the 
+ * encryption and integrity verification
+ * procedure has
+ * been implemented in the right way and that encoding issues of byte/string conversions are
+ * handled the same way in both libraries.
+ * 
  */
 public class IronCompatibilityTest {
 
