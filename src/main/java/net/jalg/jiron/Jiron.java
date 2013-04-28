@@ -242,6 +242,24 @@ public class Jiron {
 		return sealedBuilder.toString();
 	}
 
+	/** Unseal an encapsulated token.
+	 * 
+	 * This method takes a token that has been encapsulated with seal() and returns the original sealed data.
+	 * 
+	 * @param encapsulatedToken The encapsulated token
+	 * 
+	 * @param password
+	 *            Symmetric password for sealing and unsealing the data.
+	 * @param encryptionOptions
+	 *            Parameters used for the encryption phase.
+	 * @param integrityOptions
+	 *            Parameters used for the integrity phase.
+	 * @return The original data
+	 * @throws JironIntegrityException When the integrity of the token cannot be
+	 * verified, this exception is thrown. In this case, the token has been corrupted (either by
+	 * accident, e.g. truncation, or as part of an attack). 
+	 * @throws JironException
+	 */
 	public static String unseal(String encapsulatedToken, String password,
 			Options encryptionOptions, Options integrityOptions)
 			throws JironException, JironIntegrityException {
@@ -255,7 +273,7 @@ public class Jiron {
 
 		String[] parts = encapsulatedToken.split(DELIM_SPLIT_REGEX);
 		if (parts.length != 7) {
-			throw new JironException(
+			throw new JironIntegrityException(encapsulatedToken,
 					"Unable to parse iron token, number of fields retrieved from split: "
 							+ parts.length);
 		}
@@ -556,10 +574,20 @@ public class Jiron {
 		return new String(hexChars);
 	}
 	
+	/** Fixed time comparison of two strings.
+	 * 
+	 * Fixed time comparison is necessary in order to prevent attacks analyzing differences in
+	 * verification time for corrupted tokens.
+	 * 
+	 * @param lhs Left hand side operand
+	 * @param rhs Right hadn side operand
+	 * @return true if the strings are equal, false otherwise.
+	 */
 	protected static boolean fixedTimeEqual(String lhs, String rhs) {
 		
 		boolean equal = (lhs.length() == rhs.length() ? true : false);
 		
+		// If not equal, work on a single operand to have same length.
 		if(!equal) {
 			rhs = lhs;
 		}

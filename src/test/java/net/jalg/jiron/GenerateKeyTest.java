@@ -12,7 +12,7 @@ public class GenerateKeyTest {
 	private char[] pwd = { 's', 'e', 'c', 'r', 'e', 't' };
 
 	@Test
-	public void testGenerateKey() {
+	public void testGenerateKey() throws JironException {
 
 		Options opt = Jiron.DEFAULT_ENCRYPTION_OPTIONS;
 		int nbytes = (int) Math.ceil(opt.algorithm.keyBits / 8d);
@@ -20,7 +20,6 @@ public class GenerateKeyTest {
 		String saltString = Jiron.generateSalt(opt.saltBits);
 		byte[] salt = saltString.getBytes(StandardCharsets.UTF_8);
 
-		try {
 			SecretKey key1 = Jiron.generateKey(pwd, salt, opt.algorithm,
 					opt.iterations);
 			SecretKey key2 = Jiron.generateKey(pwd, salt, opt.algorithm,
@@ -30,11 +29,6 @@ public class GenerateKeyTest {
 			assertTrue(key2.equals(key1));
 			assertEquals(nbytes, key1.getEncoded().length);
 			assertEquals(nbytes, key2.getEncoded().length);
-
-		} catch (JironException e) {
-			e.printStackTrace();
-			fail(e.getMessage());
-		}
 
 	}
 

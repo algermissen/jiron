@@ -15,27 +15,14 @@ public class HmacTest {
 	private String data = "this is a secret message";
 
 	@Test
-	public void testHmac() {
+	public void testHmac() throws JironException {
 		Options opt = Jiron.DEFAULT_INTEGRITY_OPTIONS;
 		
 		String integritySalt = Jiron.generateSalt(opt.saltBits);
 		byte[] integrityByteSalt = integritySalt.getBytes(StandardCharsets.UTF_8);
 
-		try {
 			byte[] mac = Jiron.hmac(pwd, data, integrityByteSalt, opt.algorithm, opt.iterations);
-			System.out.println("mac: " + new String(mac));
-		} catch (JironException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			fail("Exc:" + e.getMessage());
-		}
-		
-
-		
-		
 		
 	}
-	
-	
 
 }
