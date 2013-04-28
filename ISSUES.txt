@@ -1,12 +1,10 @@
 This is a list of open issues and ToDos for Jiron:
 
-- Add integration tests with node.js version of iron.
+- Password rotation has not yet been implemented.
 
 - In the call to "SecretKey k = new SecretKeySpec(key.getEncoded(), "AES");"
   I do not understand on what basis "AES" is picked. If necessary, this
   should either be a constant or be part of the algorithms.
-  
-- Password rotation has not yet been implemented.
 
 - I have read somewhere (but cannot find it again) that javax.crypto
   key generation functions might actually returns keys shorter than
@@ -21,3 +19,4 @@ This is a list of open issues and ToDos for Jiron:
   
   I still do not understand why I have to do these *2* calls. Learn and
   adjust code if necessar.y
+
