@@ -4,7 +4,7 @@ jiron
 A Java implementation of [Iron](https://github.com/hueniverse/iron), a node.js module for encapsulated tokens. 
 
 Please refer to the README of iron for documentation. Especially, read the [security considerations](https://github.com/hueniverse/iron#security-considerations)
-before using this libary.
+before using this library.
 
 
 
