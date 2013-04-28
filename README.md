@@ -1,7 +1,13 @@
 jiron
 =====
 
-A Java implementation of [Iron](https://github.com/hueniverse/iron), a node.js module for encapsulated tokens.
+A Java implementation of [Iron](https://github.com/hueniverse/iron), a node.js module for encapsulated tokens. 
+
+Please refer to the README of iron for documentation. Especially, read the [security considerations](https://github.com/hueniverse/iron#security-considerations)
+before using this libary.
+
+
+
 
 Usage
 -----
@@ -9,9 +15,9 @@ Usage
 
     import net.jalg.jiron.Jiron;
 
-    String encrypted = Jron.seal("This is a secret message.", "geheim" , Jiron.Options.DEFAULT);
+    String encrypted = Jiron.seal("This is a secret message.", "secret" , Jiron.DEFAULT_ENCRYPTION_OPTIONS, Jiron.DEFAULT_INTEGRITY_OPTIONS);
 
-    String original = Jron.unseal("geheim" , Jiron.Options.DEFAULT);
+    String original = Jiron.unseal("secret" , Jiron.DEFAULT_ENCRYPTION_OPTIONS, Jiron.DEFAULT_INTEGRITY_OPTIONS);
 
 256bit AES Keys and Unlimited Strength Jurisdiction Policy Files
 ----------------------------------------------------------------
@@ -23,7 +29,7 @@ them from the Oracle Technetwork
 
 See also [http://www.ngs.ac.uk/tools/jcepolicyfiles](http://www.ngs.ac.uk/tools/jcepolicyfiles).
 
-An alternative is to include the following code in your program, as described in [http://suhothayan.blogspot.de/2012/05/how-to-install-java-cryptography.html]
+An alternative is to include the following code in your program, as described in (http://suhothayan.blogspot.de/2012/05/how-to-install-java-cryptography.html)
 
 ~~~
 
