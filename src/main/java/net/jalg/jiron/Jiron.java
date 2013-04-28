@@ -302,7 +302,7 @@ public class Jiron {
 		 * 
 		 */
 
-		if(!checkIntegrityHmacB64Url.equals(integrityHmacB64Url)) {
+		if(!fixedTimeEqual(checkIntegrityHmacB64Url,integrityHmacB64Url)) {
 			throw new JironIntegrityException(encapsulatedToken,"HMAC does not match base string");
 		}
 		
@@ -554,6 +554,25 @@ public class Jiron {
 			hexChars[j * 2 + 1] = hexArray[v & 0x0F];
 		}
 		return new String(hexChars);
+	}
+	
+	protected static boolean fixedTimeEqual(String lhs, String rhs) {
+		
+		boolean equal = (lhs.length() == rhs.length() ? true : false);
+		
+		if(!equal) {
+			rhs = lhs;
+		}
+		int len = lhs.length();
+		for(int i=0;i<len;i++) {
+			if(lhs.charAt(i) == rhs.charAt(i)) {
+				equal = equal && true;
+			} else {
+				equal = equal && false;
+			}
+		}
+		
+		return equal;
 	}
 
 }
