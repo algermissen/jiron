@@ -38,7 +38,6 @@ public class EncryptionTest {
 			assertEquals(decMsg,data);
 			
 			
-			
 		} catch (JironException e) {
 			e.printStackTrace();
 			fail(e.getMessage());

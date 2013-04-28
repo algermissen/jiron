@@ -39,6 +39,9 @@ public class SaltAndIvTest {
 		iv = Jiron.generateIv(16);
 		assertEquals(2,iv.length);
 		
+		iv = Jiron.generateIv(128);
+		assertEquals(16,iv.length);
+		
 	}
 	
 
