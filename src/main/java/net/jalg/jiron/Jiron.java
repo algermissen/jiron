@@ -188,7 +188,8 @@ public class Jiron {
 
 		// Salt contains only 0-9A-F chars and is 'token-ready'.
 		String encryptionSaltString = generateSalt(encryptionOptions.saltBits);
-		byte[] encryptionSalt = encryptionSaltString.getBytes(StandardCharsets.UTF_8);
+		byte[] encryptionSalt = encryptionSaltString
+				.getBytes(StandardCharsets.UTF_8);
 		byte[] encryptionIv = generateIv(encryptionOptions.algorithm.ivBits);
 		SecretKey encryptionSecretKey = generateKey(charPassword,
 				encryptionSalt, encryptionOptions.algorithm,
@@ -242,11 +243,14 @@ public class Jiron {
 		return sealedBuilder.toString();
 	}
 
-	/** Unseal an encapsulated token.
+	/**
+	 * Unseal an encapsulated token.
 	 * 
-	 * This method takes a token that has been encapsulated with seal() and returns the original sealed data.
+	 * This method takes a token that has been encapsulated with seal() and
+	 * returns the original sealed data.
 	 * 
-	 * @param encapsulatedToken The encapsulated token
+	 * @param encapsulatedToken
+	 *            The encapsulated token
 	 * 
 	 * @param password
 	 *            Symmetric password for sealing and unsealing the data.
@@ -255,9 +259,11 @@ public class Jiron {
 	 * @param integrityOptions
 	 *            Parameters used for the integrity phase.
 	 * @return The original data
-	 * @throws JironIntegrityException When the integrity of the token cannot be
-	 * verified, this exception is thrown. In this case, the token has been corrupted (either by
-	 * accident, e.g. truncation, or as part of an attack). 
+	 * @throws JironIntegrityException
+	 *             When the integrity of the token cannot be verified, this
+	 *             exception is thrown. In this case, the token has been
+	 *             corrupted (either by accident, e.g. truncation, or as part of
+	 *             an attack).
 	 * @throws JironException
 	 */
 	public static String unseal(String encapsulatedToken, String password,
@@ -275,7 +281,7 @@ public class Jiron {
 		if (parts.length != 7) {
 			throw new JironIntegrityException(encapsulatedToken,
 					"Unable to parse iron token, number of fields retrieved from split: "
-							+ parts.length);
+							+ parts.length + ", token: " + encapsulatedToken);
 		}
 
 		String macPrefix = parts[0];
@@ -285,12 +291,12 @@ public class Jiron {
 		String encryptedDataB64Url = parts[4];
 		String integrityHmacSaltString = parts[5];
 		String integrityHmacB64Url = parts[6];
-		
+
 		// Password rotation not yet implemented - see ISSUES.txt
 		if (!passwordId.equals("")) {
 			throw new JironException("password rotation not supported yet");
 		}
-		
+
 		/*
 		 * Reconstruct HMAC base string for integrity verification.
 		 */
@@ -298,32 +304,35 @@ public class Jiron {
 		String hmacBaseString = macPrefix + DELIM + passwordId + DELIM
 				+ encryptionSaltString + DELIM + encryptionIvBase64Url + DELIM
 				+ encryptedDataB64Url;
-		
+
 		/*
 		 * Integrity checks
 		 */
 
 		if (!macPrefix.equals(MAC_PREFIX)) {
-			throw new JironIntegrityException(encapsulatedToken,"Sealed token uses prefix "
-					+ macPrefix + " but this version of iron requires "
-					+ MAC_PREFIX); 
+			throw new JironIntegrityException(encapsulatedToken,
+					"Sealed token uses prefix " + macPrefix
+							+ " but this version of iron requires "
+							+ MAC_PREFIX);
 		}
 
 		byte[] integrityByteSalt = integrityHmacSaltString
 				.getBytes(StandardCharsets.UTF_8);
-		byte[] checkIntegrityHmac = hmac(charPassword, hmacBaseString, integrityByteSalt,
-				integrityOptions.algorithm, integrityOptions.iterations);
-		String checkIntegrityHmacB64Url = Base64.encodeBase64URLSafeString(checkIntegrityHmac);
-		
+		byte[] checkIntegrityHmac = hmac(charPassword, hmacBaseString,
+				integrityByteSalt, integrityOptions.algorithm,
+				integrityOptions.iterations);
+		String checkIntegrityHmacB64Url = Base64
+				.encodeBase64URLSafeString(checkIntegrityHmac);
+
 		/*
-		 * Verify that received HMAC is the same as the one we recomputed abive. 
-		 * 
+		 * Verify that received HMAC is the same as the one we recomputed abive.
 		 */
 
-		if(!fixedTimeEqual(checkIntegrityHmacB64Url,integrityHmacB64Url)) {
-			throw new JironIntegrityException(encapsulatedToken,"HMAC does not match base string");
+		if (!fixedTimeEqual(checkIntegrityHmacB64Url, integrityHmacB64Url)) {
+			// FIXME Does it make sense to put more information in message?
+			throw new JironIntegrityException(encapsulatedToken, "Invalid HMAC");
 		}
-		
+
 		/*
 		 * Decrypt encapsulated data.
 		 */
@@ -449,7 +458,8 @@ public class Jiron {
 					+ " is invalid", e);
 		} catch (InvalidAlgorithmParameterException e) {
 			throw new JironException(
-					"Initialization vector passed to cipher initialization", e);
+					"Initialization vector passed to cipher initialization seems to be invalid algorithm parameter",
+					e);
 		}
 
 		try {
@@ -532,7 +542,7 @@ public class Jiron {
 	 * 
 	 * @param nbits
 	 *            Size of the salt in bits. The salt will be given a size of
-	 *            ceil(nbits/8) bytes
+	 *            ceil(nbits/8) * 2 bytes
 	 * @return The salt in hex-encoded form, suitable for URLs or HTTP headers.
 	 */
 	protected static String generateSalt(int nbits) {
@@ -573,33 +583,36 @@ public class Jiron {
 		}
 		return new String(hexChars);
 	}
-	
-	/** Fixed time comparison of two strings.
+
+	/**
+	 * Fixed time comparison of two strings.
 	 * 
-	 * Fixed time comparison is necessary in order to prevent attacks analyzing differences in
-	 * verification time for corrupted tokens.
+	 * Fixed time comparison is necessary in order to prevent attacks analyzing
+	 * differences in verification time for corrupted tokens.
 	 * 
-	 * @param lhs Left hand side operand
-	 * @param rhs Right hadn side operand
+	 * @param lhs
+	 *            Left hand side operand
+	 * @param rhs
+	 *            Right hadn side operand
 	 * @return true if the strings are equal, false otherwise.
 	 */
 	protected static boolean fixedTimeEqual(String lhs, String rhs) {
-		
+
 		boolean equal = (lhs.length() == rhs.length() ? true : false);
-		
+
 		// If not equal, work on a single operand to have same length.
-		if(!equal) {
+		if (!equal) {
 			rhs = lhs;
 		}
 		int len = lhs.length();
-		for(int i=0;i<len;i++) {
-			if(lhs.charAt(i) == rhs.charAt(i)) {
+		for (int i = 0; i < len; i++) {
+			if (lhs.charAt(i) == rhs.charAt(i)) {
 				equal = equal && true;
 			} else {
 				equal = equal && false;
 			}
 		}
-		
+
 		return equal;
 	}
 
