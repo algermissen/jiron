@@ -17,7 +17,7 @@ Usage
 
     String encrypted = Jiron.seal("This is a secret message.", "secret" , Jiron.DEFAULT_ENCRYPTION_OPTIONS, Jiron.DEFAULT_INTEGRITY_OPTIONS);
 
-    String original = Jiron.unseal("secret" , Jiron.DEFAULT_ENCRYPTION_OPTIONS, Jiron.DEFAULT_INTEGRITY_OPTIONS);
+    String original = Jiron.unseal(encrypted, "secret" , Jiron.DEFAULT_ENCRYPTION_OPTIONS, Jiron.DEFAULT_INTEGRITY_OPTIONS);
 
 256bit AES Keys and Unlimited Strength Jurisdiction Policy Files
 ----------------------------------------------------------------
