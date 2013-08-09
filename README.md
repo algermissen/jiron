@@ -6,7 +6,15 @@ A Java implementation of [Iron](https://github.com/hueniverse/iron), a node.js m
 Please refer to the README of iron for documentation. Especially, read the [security considerations](https://github.com/hueniverse/iron#security-considerations)
 before using this library.
 
+Status
+------
 
+As of version 0.9 jiron is feature complete and it can be started to use it in production. Do this
+with some caution, though because feedback from production use is very limited so far.
+Personally, I use [jiron for cookie authentication](https://github.com/algermissen/iron-cookie) in
+a JAX-RS 2 project without problems.
+
+If experience does not show up any defects, jiron should move to 1.0 pretty soon.
 
 
 Usage
@@ -43,4 +51,6 @@ An alternative is to include the following code in your program, as described in
   }
 
 ~~~
+
+
 
