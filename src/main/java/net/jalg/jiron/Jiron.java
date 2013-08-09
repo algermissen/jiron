@@ -7,6 +7,7 @@ import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.KeySpec;
+import java.util.Map;
 import java.util.Random;
 
 import javax.crypto.BadPaddingException;
@@ -178,10 +179,34 @@ public class Jiron {
 	public static String seal(String data, String password,
 			Options encryptionOptions, Options integrityOptions)
 			throws JironException {
+		return seal(data,null,password,encryptionOptions,integrityOptions);
+	}
+	
+	/**
+	 * Seal data into an encapsulated token.
+	 * 
+	 * This method takes the input data and produces an encapsulated token.
+	 * 
+	 * @param data
+	 *            The data to encapsulate.
+	 * @param passwordId
+	 *            Id of the supplied password when using password rotation
+	 * @param password
+	 *            Symmetric password for sealing and unsealing the data.
+	 * @param encryptionOptions
+	 *            Parameters used for the encryption phase.
+	 * @param integrityOptions
+	 *            Parameters used for the integrity phase.
+	 * @return The encapsulated token.
+	 * @throws JironException
+	 */
+	public static String seal(String data, String passwordId, String password,
+			Options encryptionOptions, Options integrityOptions)
+			throws JironException {
 
 		char[] charPassword = new char[password.length()];
 		password.getChars(0, password.length(), charPassword, 0);
-
+		
 		/*
 		 * Generate encryption salt, iv and key.
 		 */
@@ -212,8 +237,7 @@ public class Jiron {
 				.encodeBase64URLSafeString(encryptionIv);
 
 		StringBuilder sb = new StringBuilder(MAC_PREFIX);
-		// passwordId - See ISSUES.txt, password rotation pending.
-		sb.append(DELIM).append("" /* passwordId */);
+		sb.append(DELIM).append(passwordId != null ? passwordId : "");
 		sb.append(DELIM).append(encryptionSaltString);
 		sb.append(DELIM).append(encryptionIvB64Url);
 		sb.append(DELIM).append(encryptedDataB64Url);
@@ -266,12 +290,48 @@ public class Jiron {
 	 *             an attack).
 	 * @throws JironException
 	 */
-	public static String unseal(String encapsulatedToken, String password,
+	public static String unseal(String encapsulatedToken,String password,
 			Options encryptionOptions, Options integrityOptions)
 			throws JironException, JironIntegrityException {
-
-		char[] charPassword = new char[password.length()];
-		password.getChars(0, password.length(), charPassword, 0);
+		// Here we set the passwordMap to null
+		return unseal(encapsulatedToken,null,password,encryptionOptions,integrityOptions);
+	}
+	
+	/**
+	 * Unseal an encapsulated token.
+	 * 
+	 * This method takes a token that has been encapsulated with seal() and
+	 * returns the original sealed data.
+	 * 
+	 * @param encapsulatedToken
+	 *            The encapsulated token
+	 * 
+	 * @param passwordMap
+	 *            A map containing password IDs and passwords for lookup when doing password rotation.
+	 * @param encryptionOptions
+	 *            Parameters used for the encryption phase.
+	 * @param integrityOptions
+	 *            Parameters used for the integrity phase.
+	 * @return The original data
+	 * @throws JironIntegrityException
+	 *             When the integrity of the token cannot be verified, this
+	 *             exception is thrown. In this case, the token has been
+	 *             corrupted (either by accident, e.g. truncation, or as part of
+	 *             an attack).
+	 * @throws JironException
+	 */
+	public static String unseal(String encapsulatedToken,Map<String,String> passwordMap,
+			Options encryptionOptions, Options integrityOptions)
+			throws JironException, JironIntegrityException {
+		// Here we set the password to null
+		return unseal(encapsulatedToken,passwordMap,null,encryptionOptions,integrityOptions);
+	}
+	
+	
+	private static String unseal(String encapsulatedToken, Map<String,String> passwordMap,String password,
+			Options encryptionOptions, Options integrityOptions)
+			throws JironException, JironIntegrityException {
+		
 
 		/*
 		 * Split the token into parts.
@@ -292,10 +352,56 @@ public class Jiron {
 		String integrityHmacSaltString = parts[5];
 		String integrityHmacB64Url = parts[6];
 
-		// Password rotation not yet implemented - see ISSUES.txt
-		if (!passwordId.equals("")) {
-			throw new JironException("password rotation not supported yet");
+		/*
+		 * If there is no passwordId in the token, and thus
+		 * no chance for password rotation, there must be
+		 * a password supplied.
+		 */
+		if (passwordId.length() == 0) {
+			if(password == null || password.length() == 0) {
+				throw new JironException("Password is required for tokens that contain no password ID");
+			}
 		}
+		
+		/*
+		 * If there is a passwordId in the token and if the caller
+		 * has supplied a password lookup map, we try to lookup the 
+		 * sealing password in there.
+		 * If we find one, we set the original password parameter to
+		 * this password.
+		 */
+		if (passwordId.length() > 0) {
+			if(passwordMap != null) {
+				String p = passwordMap.get(passwordId);
+				if(p != null) {
+					password = p;
+				}
+			}
+		}
+		
+		/*
+		 * If we do not have a password at this point, we cannot unseal.
+		 */
+		
+		if (password == null && passwordId.length() == 0) {
+			throw new JironException("Neither password provided nor password found in table");
+		}
+		
+		/*
+		 * Note:
+		 * Above, we cover the case that a password has been supplied but that the ID has
+		 * not been found. In this case, we try with the supplied password.
+		 * FIXME: Maybe I'll change that later.
+		 */
+		
+		/*
+		 * Now we obtain a byte array from the password because that is
+		 * what goes into the crypto functions.
+		 */
+		
+		char[] charPassword = new char[password.length()];
+		password.getChars(0, password.length(), charPassword, 0);
+		
 
 		/*
 		 * Reconstruct HMAC base string for integrity verification.
