@@ -16,6 +16,19 @@ a JAX-RS 2 project without problems.
 
 If experience does not show up any defects, jiron should move to 1.0 pretty soon.
 
+How to get it?
+--------------
+
+Maven dependency:
+
+
+    <dependency>
+      <groupId>net.jalg</groupId>
+      <artifactId>jiron</artifactId>
+      <version>1.0-SNAPSHOT</version>
+    </dependency>
+
+
 
 Usage
 -----
