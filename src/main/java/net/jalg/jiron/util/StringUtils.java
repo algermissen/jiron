@@ -65,7 +65,6 @@ public class StringUtils {
      *             required by the Java platform specification.
      * @since As of 1.7, throws {@link NullPointerException} instead of UnsupportedEncodingException
      * @see <a href="http://download.oracle.com/javase/6/docs/api/java/nio/charset/Charset.html">Standard charsets</a>
-     * @see #getBytesUnchecked(String, String)
      */
     public static byte[] getBytesUtf8(String string) {
         return getBytes(string, Charsets.UTF_8);

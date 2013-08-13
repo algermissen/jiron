@@ -22,7 +22,7 @@ package net.jalg.jiron.util;
 
 
 /**
- * Thrown when there is a failure condition during the decoding process. This exception is thrown when a {@link Decoder}
+ * Thrown when there is a failure condition during the decoding process. This exception is thrown when a Decoder.
  * encounters a decoding specific exception such as invalid data, or characters outside of the expected range.
  * 
  * Class copied from org.apache.commons.codec project.

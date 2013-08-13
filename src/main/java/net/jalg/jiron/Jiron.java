@@ -383,7 +383,7 @@ public class Jiron {
 		 * If we do not have a password at this point, we cannot unseal.
 		 */
 		
-		if (password == null && passwordId.length() == 0) {
+		if (password == null || password.length() == 0) {
 			throw new JironException("Neither password provided nor password found in table");
 		}
 		

@@ -2,6 +2,9 @@ package net.jalg.jiron;
 
 import static org.junit.Assert.*;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.junit.Test;
 
 public class JironTest {
@@ -16,7 +19,7 @@ public class JironTest {
 		String sealed = Jiron.seal(data, pwd, Jiron.DEFAULT_ENCRYPTION_OPTIONS,
 				Jiron.DEFAULT_INTEGRITY_OPTIONS);
 
-		// System.out.println("_" + sealed + "_");
+		// .out.println("_" + sealed + "_");
 
 		String unsealed = Jiron.unseal(sealed, pwd,
 				Jiron.DEFAULT_ENCRYPTION_OPTIONS,
@@ -33,6 +36,88 @@ public class JironTest {
 
 		assertEquals(data, unsealed);
 
+	}
+	
+	@Test
+	public void testSealUnsealPwdRotation() throws JironException, JironIntegrityException {
+
+		Map<String,String> pwdMap = new HashMap<String,String>();
+		pwdMap.put("1", "test");
+		pwdMap.put("2", pwd);
+		pwdMap.put("3", "foo");
+		
+		String sealed = Jiron.seal(data, "2", pwd, Jiron.DEFAULT_ENCRYPTION_OPTIONS,
+				Jiron.DEFAULT_INTEGRITY_OPTIONS);
+
+		String unsealed = Jiron.unseal(sealed, pwdMap,
+				Jiron.DEFAULT_ENCRYPTION_OPTIONS,
+				Jiron.DEFAULT_INTEGRITY_OPTIONS);
+
+		assertEquals(data, unsealed);
+	}
+	
+	@Test
+	public void testUnsealPwdRotation() throws JironException, JironIntegrityException {
+		
+		String token2 = "Fe26.1*3*81a234d22d0e5108b809b93ce6036725b3be09dd0752206e9a28db18b812695e*5QsokuciDSmIYFDruIg2hA*-eNOlZJ5HwAp5cKX-AY-xA*466db367ac2ee4d9666665266a0b9f3f863ee5fde68a690a3e09f510b1f7623e*yxd_WGJyES4TSVZCEZjGAhxnIkmaPtTO8MkQxIm9Y3U";
+
+		Map<String,String> pwdMap = new HashMap<String,String>();
+		pwdMap.put("1", "test");
+		pwdMap.put("2", pwd);
+		pwdMap.put("3", "foo");
+		
+
+		String unsealed = Jiron.unseal(token2, pwdMap,
+				Jiron.DEFAULT_ENCRYPTION_OPTIONS,
+				Jiron.DEFAULT_INTEGRITY_OPTIONS);
+
+		assertEquals("This is secret", unsealed);
+	}
+	
+	@Test(expected = JironException.class)
+	public void testUnsealPwdRotationFailsPwdNotFound() throws JironException, JironIntegrityException {
+		
+		String token = "Fe26.1*3*81a234d22d0e5108b809b93ce6036725b3be09dd0752206e9a28db18b812695e*5QsokuciDSmIYFDruIg2hA*-eNOlZJ5HwAp5cKX-AY-xA*466db367ac2ee4d9666665266a0b9f3f863ee5fde68a690a3e09f510b1f7623e*yxd_WGJyES4TSVZCEZjGAhxnIkmaPtTO8MkQxIm9Y3U";
+
+		Map<String,String> pwdMap = new HashMap<String,String>();
+		pwdMap.put("1", "test");
+		pwdMap.put("2", pwd);
+
+		String unsealed = Jiron.unseal(token, pwdMap,
+				Jiron.DEFAULT_ENCRYPTION_OPTIONS,
+				Jiron.DEFAULT_INTEGRITY_OPTIONS);
+	}
+	
+	@Test(expected = JironIntegrityException.class)
+	public void testUnsealPwdRotationFailsWrongPwd() throws JironException, JironIntegrityException {
+		
+		String token = "Fe26.1*3*81a234d22d0e5108b809b93ce6036725b3be09dd0752206e9a28db18b812695e*5QsokuciDSmIYFDruIg2hA*-eNOlZJ5HwAp5cKX-AY-xA*466db367ac2ee4d9666665266a0b9f3f863ee5fde68a690a3e09f510b1f7623e*yxd_WGJyES4TSVZCEZjGAhxnIkmaPtTO8MkQxIm9Y3U";
+
+		Map<String,String> pwdMap = new HashMap<String,String>();
+		pwdMap.put("1", "test");
+		pwdMap.put("2", pwd);
+		pwdMap.put("3", "lkehfklwehflkh");
+
+		String unsealed = Jiron.unseal(token, pwdMap,
+				Jiron.DEFAULT_ENCRYPTION_OPTIONS,
+				Jiron.DEFAULT_INTEGRITY_OPTIONS);
+	}
+	
+	@Test(expected = JironException.class)
+	public void testRotationUnsealFailsIfNoIdInToken() throws JironException, JironIntegrityException {
+		
+
+		Map<String,String> pwdMap = new HashMap<String,String>();
+		pwdMap.put("1", "test");
+		pwdMap.put("2", pwd);
+		pwdMap.put("3", "foo");
+		
+		String sealed = Jiron.seal(data, pwd, Jiron.DEFAULT_ENCRYPTION_OPTIONS,
+				Jiron.DEFAULT_INTEGRITY_OPTIONS);
+
+		String unsealed = Jiron.unseal(sealed, pwdMap,
+				Jiron.DEFAULT_ENCRYPTION_OPTIONS,
+				Jiron.DEFAULT_INTEGRITY_OPTIONS);
 	}
 
 }

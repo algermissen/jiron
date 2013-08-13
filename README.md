@@ -9,12 +9,13 @@ before using this library.
 Status
 ------
 
-As of version 0.9 jiron is feature complete and it can be started to use it in production. Do this
-with some caution, though because feedback from production use is very limited so far.
-Personally, I use [jiron for cookie authentication](https://github.com/algermissen/iron-cookie) in
-a JAX-RS 2 project without problems.
+I have moved jiron to 1.0. If you plan
+to use this in production do it with some caution as there has not yet been much production
+feedback.
 
-If experience does not show up any defects, jiron should move to 1.0 pretty soon.
+Personally, I use [jiron for cookie authentication](https://github.com/algermissen/iron-cookie)
+ in a JAX-RS 2 project without problems.
+
 
 How to get it?
 --------------
@@ -25,7 +26,7 @@ Maven dependency:
     <dependency>
       <groupId>net.jalg</groupId>
       <artifactId>jiron</artifactId>
-      <version>1.0-SNAPSHOT</version>
+      <version>1.0</version>
     </dependency>
 
 
