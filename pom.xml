@@ -123,7 +123,7 @@
   </profile>
 </profiles>
 
-<distributionManagement>
+  <distributionManagement>
     <repository>
       <id>sonatype-nexus-staging</id>
       <name>Nexus Staging Repository</name>
